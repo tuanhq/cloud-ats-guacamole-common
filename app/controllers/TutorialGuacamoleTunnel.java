@@ -134,10 +134,11 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
                   // Get session                    
                   String uuidKey=session("uuid");
-                  System.out.println("Sinh ra uuidkey:" + uuidKey);
+                  System.out.println("137 Tutorial handle request get uuid from session:" + uuidKey);
                   if(uuidKey==null) {
                     uuidKey=java.util.UUID.randomUUID().toString();
-                      session("uuid", uuidKey);
+                    System.out.println("140 Tutorial handle generate uuid whennull" + uuidKey);
+                    session("uuid", uuidKey);
                   }
                   GuacamoleSession session = new GuacamoleSession(uuidKey);
 
@@ -438,13 +439,13 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
         // Connect to guacd - everything is hard-coded here.
         
-          System.out.println("start connect");
+          System.out.println("start connect guac server");
           GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
                   new InetGuacamoleSocket("localhost", 4822),
                   config
           );
           
-          System.out.println("end connect connect");
+          System.out.println("end connect guac server");
         
         
 
@@ -454,10 +455,10 @@ public class TutorialGuacamoleTunnel  extends Controller {
         // Attach tunnel to session    
         
         String uuidKey=session("uuid");   
-        System.out.println("sessionuuid:" + uuidKey);
+        System.out.println(" 458 doconnectg uuid get from session:" + uuidKey);
         if(uuidKey==null) {
           uuidKey=java.util.UUID.randomUUID().toString();
-          System.out.println("uuid auto generate:" + uuidKey);
+          System.out.println("461 uuid auto generate:" + uuidKey);
           session("uuid", uuidKey);
         }
         GuacamoleSession session = new GuacamoleSession(uuidKey);
