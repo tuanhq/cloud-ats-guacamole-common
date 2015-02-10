@@ -1,10 +1,13 @@
 package com.fpt.su11.guacamole.servlet;
 
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
 import com.fpt.su11.guacamole.GuacamoleException;
 import com.fpt.su11.guacamole.GuacamoleSecurityException;
 import com.fpt.su11.guacamole.net.GuacamoleTunnel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,10 +60,12 @@ public class GuacamoleSession {
      * @param tunnel The tunnel to attach to this GucacamoleSession.
      */
     public void attachTunnel(GuacamoleTunnel tunnel, String key) {
+        CheckTunnel();
         tunnels.put(tunnel.getUUID().toString(), tunnel);
         play.cache.Cache.remove("GUAC_TUNNELS" + key);
         play.cache.Cache.set("GUAC_TUNNELS" + key, tunnels);
         logger.debug("Attached tunnel {}.", tunnel.getUUID());
+        CheckTunnel();
     }
 
     /**
@@ -83,7 +88,20 @@ public class GuacamoleSession {
      *         if no such tunnel is attached.
      */
     public GuacamoleTunnel getTunnel(String tunnelUUID) {
+       
+        CheckTunnel();
         return tunnels.get(tunnelUUID);
+    }
+    private void CheckTunnel(){
+      for(Entry<String, GuacamoleTunnel> entry : tunnels.entrySet()) {
+        String key = entry.getKey();
+        System.out.println("key:" + key);
+        GuacamoleTunnel value = entry.getValue();
+        System.out.println("value: " + value.getUUID());
+
+        // do what you have to do here
+        // In your case, an other loop.
+    }
     }
 
 }

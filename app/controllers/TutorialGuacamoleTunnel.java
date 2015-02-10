@@ -460,7 +460,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
         // Establish the tunnel using the connected socket
         GuacamoleTunnel tunnel = new GuacamoleTunnel(socket);
-
+        System.out.println("establish the tunnel have uuid:" + tunnel.getUUID());
         // Attach tunnel to session    
         
         String uuidKey=session("uuid");   
@@ -471,6 +471,8 @@ public class TutorialGuacamoleTunnel  extends Controller {
           session("uuid", uuidKey);
         }
         GuacamoleSession session = new GuacamoleSession(uuidKey);
+        
+        System.out.println("attach the tunnel have uuid:" + tunnel.getUUID() + "to session:" + uuidKey);
         session.attachTunnel(tunnel, uuidKey);
 
         // Return pre-attached tunnel
