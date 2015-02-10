@@ -39,8 +39,8 @@ public class GuacamoleSession {
     @SuppressWarnings("unchecked")
     public GuacamoleSession(String key) throws GuacamoleException {        
       
-        if (play.cache.Cache.get(key) == null)
-            throw new GuacamoleSecurityException("User has no session.");    
+//        if (play.cache.Cache.get(key) == null)
+//            throw new GuacamoleSecurityException("User has no session.");    
         synchronized (key) {
             tunnels = (ConcurrentMap<String, GuacamoleTunnel>) play.cache.Cache.get("GUAC_TUNNELS" + key);
             if (tunnels == null) {
