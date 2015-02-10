@@ -19,8 +19,11 @@ import org.slf4j.LoggerFactory;
 
 
 
+
+
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Results.Chunks.Out;
 
 import com.fpt.su11.guacamole.GuacamoleClientException;
 import com.fpt.su11.guacamole.GuacamoleConnectionClosedException;
@@ -257,12 +260,15 @@ public class TutorialGuacamoleTunnel  extends Controller {
    *                            request.
    */
 //  protected void doRead(HttpServletRequest request, HttpServletResponse response, String tunnelUUID) throws GuacamoleException {
-  protected static void doRead(String uuidKey, String tunnelUUID) throws GuacamoleException {
+  protected static void doRead(final String uuidKey, String tunnelUUID) throws GuacamoleException {
       
-      GuacamoleSession session = new GuacamoleSession(uuidKey);
+      final GuacamoleSession session = new GuacamoleSession(uuidKey);
+      
+      response().setContentType("application/octet-stream");
+      response().setHeader("Cache-Control", "no-cache");
 
       // Get tunnel, ensure tunnel exists
-      GuacamoleTunnel tunnel = session.getTunnel(tunnelUUID);
+      final GuacamoleTunnel tunnel = session.getTunnel(tunnelUUID);
       if (tunnel == null){
           System.out.println("Tunnel is NULLLLLL");
           throw new GuacamoleResourceNotFoundException("No such tunnel.");
@@ -273,90 +279,109 @@ public class TutorialGuacamoleTunnel  extends Controller {
           throw new GuacamoleResourceNotFoundException("Tunnel is closed.");
 
       // Obtain exclusive read access
-      GuacamoleReader reader = tunnel.acquireReader();
-
-      try {
-
-          // Note that although we are sending text, Webkit browsers will
-          // buffer 1024 bytes before starting a normal stream if we use
-          // anything but application/octet-stream.
-          response().setContentType("application/octet-stream");
-          response().setHeader("Cache-Control", "no-cache");
-
-          // Get writer for response
-      //   Writer out = new BufferedWriter(new OutputStreamWriter(
-//                  response.getOutputStream(), "UTF-8"));
-
-          // Stream data to response, ensuring output stream is closed
+      final GuacamoleReader reader = tunnel.acquireReader();
+      
+      
+      Chunks<String> chunks = new StringChunks() {
+        
+        @Override
+        public void onReady(Out<String> out) {
+          // TODO Auto-generated method stub
+          
           try {
 
-              // Detach tunnel and throw error if EOF (and we haven't sent any
-              // data yet.
-              char[] message = reader.read();
-              if (message == null)
-                  throw new GuacamoleConnectionClosedException("Tunnel reached end of stream.");
+            // Note that although we are sending text, Webkit browsers will
+            // buffer 1024 bytes before starting a normal stream if we use
+            // anything but application/octet-stream.
+            
 
-              // For all messages, until another stream is ready (we send at least one message)
-              do {
+            // Get writer for response
+        //   Writer out = new BufferedWriter(new OutputStreamWriter(
+//                    response.getOutputStream(), "UTF-8"));
 
-                  // Get message output bytes
-                  
-                InputStream is = new ByteArrayInputStream(new String(message).getBytes());
-                ok(is);
+            // Stream data to response, ensuring output stream is closed
+            try {
 
-                  // Flush if we expect to wait
-                  if (!reader.available()) {
-//                      out.flush();
-//                      response.flushBuffer();
-                  }
+                // Detach tunnel and throw error if EOF (and we haven't sent any
+                // data yet.
+                char[] message = reader.read();
+                if (message == null)
+                    throw new GuacamoleConnectionClosedException("Tunnel reached end of stream.");
 
-                  // No more messages another stream can take over
-                  if (tunnel.hasQueuedReaderThreads())
-                      break;
+                // For all messages, until another stream is ready (we send at least one message)
+                do {
 
-              } while (tunnel.isOpen() && (message = reader.read()) != null);
+                    // Get message output bytes
+//                    
+//                  InputStream is = new ByteArrayInputStream(new String(message).getBytes());
+//                  ok(is);
+                  out.write(new String(message));
+                    // Flush if we expect to wait
+                    if (!reader.available()) {
+//                        out.flush();
+                      
+//                        response.flushBuffer();
+                    }
 
-              // Close tunnel immediately upon EOF
-              if (message == null)
-                  tunnel.close();
+                    // No more messages another stream can take over
+                    if (tunnel.hasQueuedReaderThreads())
+                        break;
 
-              // End-of-instructions marker
-              ok("0.;".getBytes());                
-          }
+                } while (tunnel.isOpen() && (message = reader.read()) != null);
 
-          // Send end-of-stream marker if connection is closed
-          catch (GuacamoleConnectionClosedException e) {
-            ok("0.;".getBytes());
-          }
+                // Close tunnel immediately upon EOF
+                if (message == null)
+                    tunnel.close();
 
-          catch (GuacamoleException e) {
+                // End-of-instructions marker
+                out.write("0.;");                
+            }
 
-              // Detach and close
-              session.detachTunnel(tunnel, uuidKey);
+            // Send end-of-stream marker if connection is closed
+            catch (GuacamoleConnectionClosedException e) {
+              out.write("0.;");
+            }
+
+            catch (GuacamoleException e) {
+
+                // Detach and close
+                session.detachTunnel(tunnel, uuidKey);
+                tunnel.close();
+
+                throw e;
+            }
+
+            // Always close output stream
+            finally {
+//                out.close();
+            }
+
+        }
+        catch (Exception e) {
+
+            // Log typically frequent I/O error if desired
+            logger.debug("Error writing to servlet output stream", e);
+
+            // Detach and close
+            session.detachTunnel(tunnel, uuidKey);
+            try {
               tunnel.close();
+            } catch (GuacamoleException e1) {
+              // TODO Auto-generated catch block
+              e1.printStackTrace();
+            }
 
-              throw e;
-          }
+        }
+        finally {
+            tunnel.releaseReader();
+        }
+          
+        }
+      };
+      ok(chunks);
+      
 
-          // Always close output stream
-          finally {
-//              out.close();
-          }
-
-      }
-      catch (Exception e) {
-
-          // Log typically frequent I/O error if desired
-          logger.debug("Error writing to servlet output stream", e);
-
-          // Detach and close
-          session.detachTunnel(tunnel, uuidKey);
-          tunnel.close();
-
-      }
-      finally {
-          tunnel.releaseReader();
-      }
+    
 
   }
 
