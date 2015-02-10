@@ -454,8 +454,10 @@ public class TutorialGuacamoleTunnel  extends Controller {
         // Attach tunnel to session    
         
         String uuidKey=session("uuid");
+        System.out.println("session uuid:" + uuidKey);
         if(uuidKey==null) {
           uuidKey=java.util.UUID.randomUUID().toString();
+          System.out.println("random uuid:" + uuidKey);
           session("uuid", uuidKey);
         }
         GuacamoleSession session = new GuacamoleSession(uuidKey);
