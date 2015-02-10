@@ -31,7 +31,6 @@ import com.fpt.su11.guacamole.net.InetGuacamoleSocket;
 import com.fpt.su11.guacamole.protocol.ConfiguredGuacamoleSocket;
 import com.fpt.su11.guacamole.protocol.GuacamoleConfiguration;
 import com.fpt.su11.guacamole.protocol.GuacamoleStatus;
-import com.fpt.su11.guacamole.servlet.GuacamoleHTTPTunnel;
 import com.fpt.su11.guacamole.servlet.GuacamoleSession;
 
 public class TutorialGuacamoleTunnel  extends Controller {
@@ -41,7 +40,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
   /**
    * Logger for this class.
    */
-  private static Logger logger = LoggerFactory.getLogger(GuacamoleHTTPTunnel.class);
+  private static Logger logger = LoggerFactory.getLogger(TutorialGuacamoleTunnel.class);
 
   /**
    * The prefix of the query string which denotes a tunnel read operation.
@@ -143,7 +142,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
                   GuacamoleSession session = new GuacamoleSession(uuidKey);
 
                   // Attach tunnel to session
-                  session.attachTunnel(tunnel);
+                  session.attachTunnel(tunnel, uuidKey);
 
                   try {
                       // Ensure buggy browsers do not cache response
@@ -167,8 +166,13 @@ public class TutorialGuacamoleTunnel  extends Controller {
           // If read operation, call doRead() with tunnel UUID, ignoring any
           // characters following the tunnel UUID.
           else if(request().uri().startsWith(request().path() + "?" + READ_PREFIX)) {
+              System.out.println("start do read socket");
               String uuidKey=session("uuid");
               String query = request().uri().substring(request().path().length() + 1);
+              System.out.println("query is :" + query);
+              System.out.println("substring query is :" + query.substring(
+                      READ_PREFIX_LENGTH,
+                      READ_PREFIX_LENGTH + UUID_LENGTH));
               doRead(uuidKey, query.substring(
                       READ_PREFIX_LENGTH,
                       READ_PREFIX_LENGTH + UUID_LENGTH));
@@ -177,6 +181,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
           // If write operation, call doWrite() with tunnel UUID, ignoring any
           // characters following the tunnel UUID.
           else if(request().uri().startsWith(request().path() + "?" + WRITE_PREFIX)) {
+             System.out.println("start do write socket");
               String uuidKey=session("uuid");
               String query = request().uri().substring(request().path().length() + 1);
               doWrite(uuidKey, query.substring(
@@ -250,8 +255,10 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
       // Get tunnel, ensure tunnel exists
       GuacamoleTunnel tunnel = session.getTunnel(tunnelUUID);
-      if (tunnel == null)
+      if (tunnel == null){
+          System.out.println("Tunnel is NULLLLLL");
           throw new GuacamoleResourceNotFoundException("No such tunnel.");
+      }
 
       // Ensure tunnel is open
       if (!tunnel.isOpen())
@@ -316,7 +323,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
           catch (GuacamoleException e) {
 
               // Detach and close
-              session.detachTunnel(tunnel);
+              session.detachTunnel(tunnel, uuidKey);
               tunnel.close();
 
               throw e;
@@ -334,7 +341,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
           logger.debug("Error writing to servlet output stream", e);
 
           // Detach and close
-          session.detachTunnel(tunnel);
+          session.detachTunnel(tunnel, uuidKey);
           tunnel.close();
 
       }
@@ -363,6 +370,8 @@ public class TutorialGuacamoleTunnel  extends Controller {
   protected static void doWrite(String uuidKey, String tunnelUUID) throws GuacamoleException {
     
       
+      System.out.println("session id :" + uuidKey);
+      System.out.println("tunnelUuid :" + tunnelUUID);
       GuacamoleSession session = new GuacamoleSession(uuidKey);
 
       GuacamoleTunnel tunnel = session.getTunnel(tunnelUUID);
@@ -385,7 +394,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
           // Get input reader for HTTP stream
           
-          
+          System.out.println("request body :" + request().body().asRaw().asBytes().toString());
           Reader input = new InputStreamReader(new ByteArrayInputStream(request().body().asRaw().asBytes()),"UTF-8");           
           
           // Transfer data from input stream to tunnel output, ensuring
@@ -415,7 +424,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
       catch (IOException e) {
 
           // Detach and close
-          session.detachTunnel(tunnel);
+          session.detachTunnel(tunnel, uuidKey);
           tunnel.close();
 
           throw new GuacamoleServerException("I/O Error sending data to server: " + e.getMessage(), e);
@@ -462,7 +471,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
           session("uuid", uuidKey);
         }
         GuacamoleSession session = new GuacamoleSession(uuidKey);
-        session.attachTunnel(tunnel);
+        session.attachTunnel(tunnel, uuidKey);
 
         // Return pre-attached tunnel
         return tunnel;

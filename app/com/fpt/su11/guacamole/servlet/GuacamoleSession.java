@@ -56,8 +56,10 @@ public class GuacamoleSession {
      * Attaches the given tunnel to this GuacamoleSession.
      * @param tunnel The tunnel to attach to this GucacamoleSession.
      */
-    public void attachTunnel(GuacamoleTunnel tunnel) {
+    public void attachTunnel(GuacamoleTunnel tunnel, String key) {
         tunnels.put(tunnel.getUUID().toString(), tunnel);
+        play.cache.Cache.remove("GUAC_TUNNELS" + key);
+        play.cache.Cache.set("GUAC_TUNNELS" + key, tunnels);
         logger.debug("Attached tunnel {}.", tunnel.getUUID());
     }
 
@@ -65,8 +67,10 @@ public class GuacamoleSession {
      * Detaches the given tunnel to this GuacamoleSession.
      * @param tunnel The tunnel to detach to this GucacamoleSession.
      */
-    public void detachTunnel(GuacamoleTunnel tunnel) {
+    public void detachTunnel(GuacamoleTunnel tunnel, String key) {
         tunnels.remove(tunnel.getUUID().toString());
+        play.cache.Cache.remove("GUAC_TUNNELS" + key);
+        play.cache.Cache.set("GUAC_TUNNELS" + key, tunnels);
         logger.debug("Detached tunnel {}.", tunnel.getUUID());
     }
 

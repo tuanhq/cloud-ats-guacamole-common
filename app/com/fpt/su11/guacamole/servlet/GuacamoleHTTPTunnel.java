@@ -140,7 +140,7 @@ public abstract class GuacamoleHTTPTunnel extends Controller {
                     GuacamoleSession session = new GuacamoleSession(uuidKey);
 
                     // Attach tunnel to session
-                    session.attachTunnel(tunnel);
+                    session.attachTunnel(tunnel, uuidKey);
 
                     try {
                         // Ensure buggy browsers do not cache response
@@ -306,7 +306,7 @@ public abstract class GuacamoleHTTPTunnel extends Controller {
             catch (GuacamoleException e) {
 
                 // Detach and close
-                session.detachTunnel(tunnel);
+                session.detachTunnel(tunnel ,uuidKey);
                 tunnel.close();
 
                 throw e;
@@ -324,7 +324,7 @@ public abstract class GuacamoleHTTPTunnel extends Controller {
             logger.debug("Error writing to servlet output stream", e);
 
             // Detach and close
-            session.detachTunnel(tunnel);
+            session.detachTunnel(tunnel, uuidKey);
             tunnel.close();
 
         }
