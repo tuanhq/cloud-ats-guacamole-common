@@ -301,7 +301,8 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
                   // Get message output bytes
                   
-                  ok(new String(message).getBytes());
+                InputStream is = new ByteArrayInputStream(new String(message).getBytes());
+                ok(is);
 
                   // Flush if we expect to wait
                   if (!reader.available()) {
