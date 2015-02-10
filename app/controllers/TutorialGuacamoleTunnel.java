@@ -3,14 +3,18 @@ package controllers;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
 
 
 
@@ -398,8 +402,13 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
           // Get input reader for HTTP stream
           
-          System.out.println("request body :" +  request().body().asText());
-          Reader input = new InputStreamReader(new ByteArrayInputStream(request().body().asText().getBytes()),"UTF-8");           
+          System.out.println("request body as form url endcode");
+          for (Entry<String, String[]> entry: request().body().asFormUrlEncoded().entrySet()){
+            System.out.println("key :" + entry.getKey());
+            System.out.println("value : " + entry.getValue());
+          }
+          
+          Reader input = new InputStreamReader(new ByteArrayInputStream(request().body().asFormUrlEncoded().toString().getBytes()),"UTF-8");           
           
           // Transfer data from input stream to tunnel output, ensuring
           // input is always closed
