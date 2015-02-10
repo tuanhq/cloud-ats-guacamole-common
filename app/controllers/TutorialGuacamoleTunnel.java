@@ -184,6 +184,10 @@ public class TutorialGuacamoleTunnel  extends Controller {
              System.out.println("start do write socket");
               String uuidKey=session("uuid");
               String query = request().uri().substring(request().path().length() + 1);
+              System.out.println("query is write :" + query);
+              System.out.println("substring query write is :" + query.substring(
+                  WRITE_PREFIX_LENGTH,
+                  WRITE_PREFIX_LENGTH + UUID_LENGTH));
               doWrite(uuidKey, query.substring(
                       WRITE_PREFIX_LENGTH,
                       WRITE_PREFIX_LENGTH + UUID_LENGTH));
@@ -394,8 +398,8 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
           // Get input reader for HTTP stream
           
-          System.out.println("request body :" + request().body().asRaw().asBytes().toString());
-          Reader input = new InputStreamReader(new ByteArrayInputStream(request().body().asRaw().asBytes()),"UTF-8");           
+          System.out.println("request body :" +  request().body().asText());
+          Reader input = new InputStreamReader(new ByteArrayInputStream(request().body().asText().getBytes()),"UTF-8");           
           
           // Transfer data from input stream to tunnel output, ensuring
           // input is always closed
