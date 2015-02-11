@@ -305,7 +305,8 @@ public class TutorialGuacamoleTunnel  extends Controller {
                   // Get message output bytes
                 i++;
                 System.out.println("Message read from guac server :" + i + " ****" + new String(message));
-                  ok(new String(message).getBytes());
+                  char[] a = {'a','b'};
+                  ok(new String(a).getBytes());
 
                   // Flush if we expect to wait
                   if (!reader.available()) {
