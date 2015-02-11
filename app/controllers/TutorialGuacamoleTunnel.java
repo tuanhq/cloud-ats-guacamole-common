@@ -180,10 +180,9 @@ public class TutorialGuacamoleTunnel  extends Controller {
               System.out.println("substring query is :" + query.substring(
                       READ_PREFIX_LENGTH,
                       READ_PREFIX_LENGTH + UUID_LENGTH));
-              doRead(uuidKey, query.substring(
+             return doRead(uuidKey, query.substring(
                       READ_PREFIX_LENGTH,
                       READ_PREFIX_LENGTH + UUID_LENGTH));
-              return ok("finish");
           }
           // If write operation, call doWrite() with tunnel UUID, ignoring any
           // characters following the tunnel UUID.
