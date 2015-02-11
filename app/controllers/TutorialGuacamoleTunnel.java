@@ -294,6 +294,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
               // Detach tunnel and throw error if EOF (and we haven't sent any
               // data yet.
               char[] message = reader.read();
+              System.out.println(new String(message));
               if (message == null)
                   throw new GuacamoleConnectionClosedException("Tunnel reached end of stream.");
 
