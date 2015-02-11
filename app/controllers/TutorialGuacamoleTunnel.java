@@ -294,15 +294,17 @@ public class TutorialGuacamoleTunnel  extends Controller {
               // Detach tunnel and throw error if EOF (and we haven't sent any
               // data yet.
               char[] message = reader.read();
-              System.out.println("Message read from guac server :" + new String(message));
+              
               if (message == null)
                   throw new GuacamoleConnectionClosedException("Tunnel reached end of stream.");
 
               // For all messages, until another stream is ready (we send at least one message)
+              int i=0;
               do {
 
                   // Get message output bytes
-                  
+                i++;
+                System.out.println("Message read from guac server :" + i + " ****" + new String(message));
                   ok(new String(message).getBytes());
 
                   // Flush if we expect to wait
