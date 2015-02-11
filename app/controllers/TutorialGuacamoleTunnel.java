@@ -282,6 +282,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
           // anything but application/octet-stream.
           response().setContentType("application/octet-stream");
           response().setHeader("Cache-Control", "no-cache");
+          response().setHeader("Transfer-Encoding", "chunked");
 
           // Get writer for response
       //   Writer out = new BufferedWriter(new OutputStreamWriter(
