@@ -19,8 +19,11 @@ import org.slf4j.LoggerFactory;
 
 
 
+
+
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Results.Chunks.Out;
 
 import com.fpt.su11.guacamole.GuacamoleClientException;
 import com.fpt.su11.guacamole.GuacamoleConnectionClosedException;
@@ -171,16 +174,30 @@ public class TutorialGuacamoleTunnel  extends Controller {
           // characters following the tunnel UUID.
           else if(request().uri().startsWith(request().path() + "?" + READ_PREFIX)) {
               System.out.println("start do read socket");
-              String uuidKey=session("uuid");
-              String query = request().uri().substring(request().path().length() + 1);
+              final String uuidKey=session("uuid");
+              final String query = request().uri().substring(request().path().length() + 1);
               System.out.println("query is :" + query);
               System.out.println("substring query is :" + query.substring(
                       READ_PREFIX_LENGTH,
                       READ_PREFIX_LENGTH + UUID_LENGTH));
-              doRead(uuidKey, query.substring(
-                      READ_PREFIX_LENGTH,
-                      READ_PREFIX_LENGTH + UUID_LENGTH));
-              return ok("finish");
+              
+              Chunks<String> chunk = new StringChunks() {
+                
+                @Override
+                public void onReady(Out<String> out) {
+                  // TODO Auto-generated method stub
+                  try {
+                    doRead(uuidKey, query.substring(
+                        READ_PREFIX_LENGTH,
+                        READ_PREFIX_LENGTH + UUID_LENGTH), out);
+                  } catch (GuacamoleException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                  }
+                }
+              };
+             return ok(chunk);
+             
           }
           // If write operation, call doWrite() with tunnel UUID, ignoring any
           // characters following the tunnel UUID.
@@ -257,7 +274,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
    *                            request.
    */
 //  protected void doRead(HttpServletRequest request, HttpServletResponse response, String tunnelUUID) throws GuacamoleException {
-  protected static void doRead(String uuidKey, String tunnelUUID) throws GuacamoleException {
+  protected static void doRead(String uuidKey, String tunnelUUID, Out<String> out) throws GuacamoleException {
       
       GuacamoleSession session = new GuacamoleSession(uuidKey);
 
@@ -304,12 +321,15 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
                   // Get message output bytes
                 i++;
-                System.out.println("Message read from guac server :" + i + " ****" + new String(message));                  
-                  ok(new String(message));
+                System.out.println("Message read from guac server :" + i + " ****" + new String(message));
+                  
+                 out.write(new String(message));
+                  
 
                   // Flush if we expect to wait
                   if (!reader.available()) {
 //                      out.flush();
+                    
 //                      response.flushBuffer();
                   }
 
@@ -324,12 +344,12 @@ public class TutorialGuacamoleTunnel  extends Controller {
                   tunnel.close();
 
               // End-of-instructions marker
-              ok("0.;".getBytes());                
+              out.write("0.;");                
           }
 
           // Send end-of-stream marker if connection is closed
           catch (GuacamoleConnectionClosedException e) {
-            ok("0.;".getBytes());
+            out.write("0.;");
           }
 
           catch (GuacamoleException e) {
