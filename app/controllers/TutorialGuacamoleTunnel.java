@@ -260,7 +260,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
    *                            request.
    */
 //  protected void doRead(HttpServletRequest request, HttpServletResponse response, String tunnelUUID) throws GuacamoleException {
-  protected static void doRead(final String uuidKey, String tunnelUUID) throws GuacamoleException {
+  protected static Result doRead(final String uuidKey, String tunnelUUID) throws GuacamoleException {
       
       final GuacamoleSession session = new GuacamoleSession(uuidKey);
       
@@ -378,7 +378,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
           
         }
       };
-      ok(chunks);
+     return ok(chunks);
       
 
     
