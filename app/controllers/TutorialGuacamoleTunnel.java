@@ -416,8 +416,8 @@ public class TutorialGuacamoleTunnel  extends Controller {
       // text/html, as such a content type would cause some browsers to
       // attempt to parse the result, even though the JavaScript client
       // does not explicitly request such parsing.
-      response().setContentType("application/octet-stream");
-      response().setHeader("Cache-Control", "no-cache");
+    //  response().setContentType("application/octet-stream");
+     // response().setHeader("Cache-Control", "no-cache");
     //  response().setContentLength(0);
 
       // Send data
@@ -427,11 +427,15 @@ public class TutorialGuacamoleTunnel  extends Controller {
           GuacamoleWriter writer = tunnel.acquireWriter();
 
           // Get input reader for HTTP stream
-          
-          System.out.println("request body as form url endcode");
+          System.out.println("request body as form as string :" + request().uri());
+          System.out.println("request body as form as asRaw byte :" + request().body().asRaw().asBytes());
+          System.out.println("request body as form as string :" + request().body().toString());
+          System.out.println("request body as form as text :" + request().body().asText());
+          System.out.println("request body as form as raw :" + request().body().asRaw());
           for (Entry<String, String[]> entry: request().body().asFormUrlEncoded().entrySet()){
             System.out.println("key :" + entry.getKey());
             System.out.println("value : " + entry.getValue());
+            
           }
           
           Reader input = new InputStreamReader(new ByteArrayInputStream(request().body().asFormUrlEncoded().toString().getBytes()),"UTF-8");           
