@@ -21,7 +21,9 @@ import org.slf4j.LoggerFactory;
 
 
 
+
 import play.mvc.Controller;
+import play.mvc.Http.Response;
 import play.mvc.Result;
 import play.mvc.Results.Chunks.Out;
 
@@ -43,7 +45,6 @@ import com.fpt.su11.guacamole.servlet.GuacamoleSession;
 public class TutorialGuacamoleTunnel  extends Controller {
   
    
-  
   /**
    * Logger for this class.
    */
@@ -213,6 +214,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
                       WRITE_PREFIX_LENGTH,
                       WRITE_PREFIX_LENGTH + UUID_LENGTH));
               return ok("finish");
+              
 
           // Otherwise, invalid operation
           }else{
@@ -297,9 +299,9 @@ public class TutorialGuacamoleTunnel  extends Controller {
           // Note that although we are sending text, Webkit browsers will
           // buffer 1024 bytes before starting a normal stream if we use
           // anything but application/octet-stream.
-          response().setContentType("application/octet-stream");
-          response().setHeader("Cache-Control", "no-cache");
-          response().setHeader("Transfer-Encoding", "chunked");
+//          response().setContentType("application/octet-stream");
+//          response().setHeader("Cache-Control", "no-cache");
+         
 
           // Get writer for response
       //   Writer out = new BufferedWriter(new OutputStreamWriter(
@@ -363,7 +365,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
           // Always close output stream
           finally {
-//              out.close();
+             out.close();
           }
 
       }
