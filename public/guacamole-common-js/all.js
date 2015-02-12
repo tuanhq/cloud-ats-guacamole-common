@@ -8073,7 +8073,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
                 }
             };
-            var tuanhq_data: '{"tuanhq": "' + outputMessageBuffer + '"}';
+            var tuanhq_data = '{"tuanhq": "' + outputMessageBuffer + '"}';
             message_xmlhttprequest.send(tuanhq_data);
             outputMessageBuffer = ""; // Clear buffer
             tuanhq_data = "";
