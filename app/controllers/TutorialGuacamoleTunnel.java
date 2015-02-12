@@ -431,7 +431,9 @@ public class TutorialGuacamoleTunnel  extends Controller {
           System.out.println("PRINT QUERY STRING************");
           for (Entry<String, String[]> entry :request().queryString().entrySet()){
             System.out.println("key :" + entry.getKey());
-            System.out.println("value : " + entry.getValue());
+            for (String s : entry.getValue()) {
+              System.out.println("\tvalue : " + s);
+            }
           }
           System.out.println("END PRINT QUERY STRING************");
           String value = values.get("name")[0];
