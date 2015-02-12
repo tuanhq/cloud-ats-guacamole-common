@@ -436,15 +436,19 @@ public class TutorialGuacamoleTunnel  extends Controller {
             }
           }
           System.out.println("END PRINT QUERY STRING************");
-          String value = values.get("name")[0];
-          System.out.println("BBBBBBBBBBBBBBBBBBBBBBBB  :" + value);
+          String value = values.get("tuanhq_data")[0];
+          
+          System.out.println("BBBBBBBBBBBBBBBBBBB :" + value);   
           System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAA :" + request().uri());          
           System.out.println("request body as form as string :" + request().body().toString());
           System.out.println("request body as form as text :" + request().body().asText());
-          System.out.println("request body as form as raw :" + request().body().asRaw());
+          System.out.println("request body as form as text :" + request().body().asJson().toString());
+          
           for (Entry<String, String[]> entry: request().body().asFormUrlEncoded().entrySet()){
             System.out.println("key :" + entry.getKey());
-            System.out.println("value : " + entry.getValue());
+            for (String s : entry.getValue()) {
+              System.out.println("\tvalue : " + s);
+            }
             
           }
           
