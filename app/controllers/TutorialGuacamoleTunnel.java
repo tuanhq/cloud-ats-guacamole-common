@@ -427,8 +427,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
           GuacamoleWriter writer = tunnel.acquireWriter();
 
           // Get input reader for HTTP stream
-          System.out.println("request body as form as string :" + request().uri());
-          System.out.println("request body as form as asRaw byte :" + request().body().asRaw().asBytes());
+          System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAA :" + request().uri());          
           System.out.println("request body as form as string :" + request().body().toString());
           System.out.println("request body as form as text :" + request().body().asText());
           System.out.println("request body as form as raw :" + request().body().asRaw());
