@@ -427,6 +427,15 @@ public class TutorialGuacamoleTunnel  extends Controller {
           GuacamoleWriter writer = tunnel.acquireWriter();
 
           // Get input reader for HTTP stream
+          Map<String, String[]> values = request().body().asFormUrlEncoded();
+          System.out.println("PRINT QUERY STRING************");
+          for (Entry<String, String[]> entry :request().queryString().entrySet()){
+            System.out.println("key :" + entry.getKey());
+            System.out.println("value : " + entry.getValue());
+          }
+          System.out.println("END PRINT QUERY STRING************");
+          String value = values.get("name")[0];
+          System.out.println("BBBBBBBBBBBBBBBBBBBBBBBB  :" + value);
           System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAA :" + request().uri());          
           System.out.println("request body as form as string :" + request().body().toString());
           System.out.println("request body as form as text :" + request().body().asText());
