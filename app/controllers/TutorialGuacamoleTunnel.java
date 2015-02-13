@@ -189,11 +189,13 @@ public class TutorialGuacamoleTunnel  extends Controller {
           // characters following the tunnel UUID.
           else if(request().uri().startsWith(request().path() + "?" + WRITE_PREFIX)) {            
               String uuidKey=session("uuid");
-              String query = request().uri().substring(request().path().length() + 1);              
+              String query = request().uri().substring(request().path().length() + 1);   
+              
               doWrite(uuidKey, query.substring(
                       WRITE_PREFIX_LENGTH,
                       WRITE_PREFIX_LENGTH + UUID_LENGTH));
-              return ok("finish");
+              response().setHeader("Content-Length", "0");
+              return ok().as("application/octet-stream");
               
 
           // Otherwise, invalid operation
@@ -397,8 +399,8 @@ public class TutorialGuacamoleTunnel  extends Controller {
       // attempt to parse the result, even though the JavaScript client
       // does not explicitly request such parsing.
     //  response().setContentType("application/octet-stream");
-     // response().setHeader("Cache-Control", "no-cache");
-    //  response().setContentLength(0);
+        response().setHeader("Cache-Control", "no-cache");
+     //  response().setContentLength(0);
 
       // Send data
       try {
