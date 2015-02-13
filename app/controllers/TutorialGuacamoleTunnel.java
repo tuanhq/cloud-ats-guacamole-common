@@ -11,8 +11,11 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 
 
@@ -27,6 +30,7 @@ import play.mvc.Http.Response;
 import play.mvc.Result;
 import play.mvc.Results.Chunks.Out;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fpt.su11.guacamole.GuacamoleClientException;
 import com.fpt.su11.guacamole.GuacamoleConnectionClosedException;
 import com.fpt.su11.guacamole.GuacamoleException;
@@ -436,13 +440,35 @@ public class TutorialGuacamoleTunnel  extends Controller {
             }
           }
           System.out.println("END PRINT QUERY STRING************");
-          String value = values.get("tuanhq_data")[0];
+          try {
+            String value = values.get("key")[0];
+            System.out.println("BBBBBBBBBBBBBBBBBBB :" + value); 
+          } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Have no value get by FORM URLENDCODED EXCEPTION");
+          }
           
-          System.out.println("BBBBBBBBBBBBBBBBBBB :" + value);   
+          
+            
           System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAA :" + request().uri());          
           System.out.println("request body as form as string :" + request().body().toString());
           System.out.println("request body as form as text :" + request().body().asText());
-          System.out.println("request body as form as text :" + request().body().asJson().toString());
+          try {
+            JsonNode json = request().body().asJson();
+            if(json == null) {
+             System.out.println("JON GET NULL");
+            } else {
+              String name = json.findPath("key").asText();
+              if(name == null) {
+                System.out.println("KEY VALUE NULL");
+              } else {
+                System.out.println("VALUE KEY IS: " + name );
+              }
+            }
+          } catch (Exception e) {
+            // TODO: handle exception;
+            System.out.print("GET JSONE EXCEPTION");
+          }
           
           for (Entry<String, String[]> entry: request().body().asFormUrlEncoded().entrySet()){
             System.out.println("key :" + entry.getKey());
