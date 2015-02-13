@@ -1,35 +1,22 @@
 package controllers;
 
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
-
-
-
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
-
-
-
-
-
-
-
 import play.mvc.Controller;
-import play.mvc.Http.Response;
 import play.mvc.Result;
 import play.mvc.Results.Chunks.Out;
 
@@ -424,9 +411,9 @@ public class TutorialGuacamoleTunnel  extends Controller {
           // Get input reader for HTTP stream
           JsonNode json = request().body().asJson();
           String value = json.findPath("key").asText();
-          System.out.println("Value receive IS :" + value);          
-          Reader input = new InputStreamReader(IOUtils.toInputStream(value));                           
-          
+          System.out.println("Value receive IS :" + value); 
+          InputStream inputStream = new ByteArrayInputStream(value.getBytes(Charset.forName("UTF-8")));                                  
+          BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
           // Transfer data from input stream to tunnel output, ensuring
           // input is always closed
           try {
@@ -443,7 +430,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
               } else {
                 System.out.println("TUNNEL IS CLOSE");
               }
-              while (tunnel.isOpen() &&(length = input.read(buffer, 0, buffer.length)) != -1) {
+              while (tunnel.isOpen() &&(length = bufferedReader.read(buffer, 0, buffer.length)) != -1) {
                   System.out.println("VALUE TO BUFFER" + new String(buffer)); 
                   writer.write(buffer, 0, length);
               }
@@ -452,7 +439,7 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
           // Close input stream in all cases
           finally {
-              input.close();
+            bufferedReader.close();
           }
           
           System.out.println("END WRITE");
