@@ -6,13 +6,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Map;
 
 import javax.servlet.ServletException;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +114,6 @@ public class TutorialGuacamoleTunnel  extends Controller {
    */
 //  protected void handleTunnelRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException {
     public static Result handleTunnelRequest() throws Exception {
-      
     
       try {
 
