@@ -76,29 +76,30 @@ public class TutorialGuacamoleTunnel  extends Controller {
    * @param guac_status The status to send
    * @param message A human-readable message that can be presented to the
    *                user.
+   * @return 
    * @throws ServletException If an error prevents sending of the error
    *                          code.
    */
-  public static void sendError(GuacamoleStatus guac_status, String message)
+  public static Result sendError(GuacamoleStatus guac_status, String message) throws ServletException
           {
     
-     /* try {
+      try {
 
 //          // If response not committed, send error code and message
-          if (!response.isCommitted()) {
-              response.addHeader("Guacamole-Status-Code", Integer.toString(guac_status.getGuacamoleStatusCode()));
-              response.addHeader("Guacamole-Error-Message", message);
-              response.sendError(guac_status.getHttpStatusCode());
-          }
+         // if (!response.isCommitted()) {
+              response().setHeader("Guacamole-Status-Code", Integer.toString(guac_status.getGuacamoleStatusCode()));
+              response().setHeader("Guacamole-Error-Message", message);
+              return ok(String.valueOf(guac_status.getHttpStatusCode()));
+          //}
 
       }
-      catch (IOException ioe) {
+      catch (Exception ioe) {
 
           // If unable to send error at all due to I/O problems,
           // rethrow as servlet exception
           throw new ServletException(ioe);
 
-      }*/
+      }
 
   }
 
@@ -206,14 +207,14 @@ public class TutorialGuacamoleTunnel  extends Controller {
       // HTTP response, logging each error appropriately.
       catch (GuacamoleClientException e) {
           logger.warn("HTTP tunnel request rejected: {}", e.getMessage());
-          return ok("finish");
-       //   sendError(response, e.getStatus(), e.getMessage());
+         
+          return sendError(e.getStatus(), e.getMessage());
       }
       catch (GuacamoleException e) {
           logger.error("HTTP tunnel request failed: {}", e.getMessage());
           logger.debug("Internal error in HTTP tunnel.", e);
-          return ok("finish");
-        //  sendError(response, e.getStatus(), "Internal server error.");
+          
+       return sendError(e.getStatus(), "Internal server error.");
       }
       
       
