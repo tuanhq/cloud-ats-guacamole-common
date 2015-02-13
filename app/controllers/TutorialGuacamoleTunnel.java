@@ -433,17 +433,20 @@ public class TutorialGuacamoleTunnel  extends Controller {
               char[] buffer = new char[8192];
 
               // Transfer data using buffer
+              System.out.println("START LOOP WRITE");
               while (tunnel.isOpen() &&(length = input.read(buffer, 0, buffer.length)) != -1) {
-                  System.out.println(new String(buffer)); 
+                  System.out.println("VALUE TO BUFFER" + new String(buffer)); 
                   writer.write(buffer, 0, length);
               }
-
+              System.out.println("END LOOP WRITE");
           }
 
           // Close input stream in all cases
           finally {
               input.close();
           }
+          
+          System.out.println("END WRITE");
 
       }
       catch (GuacamoleConnectionClosedException e) {
