@@ -7944,7 +7944,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     var sendingMessages = false;
     var outputMessageBuffer = "";
-
+    var stringSend = "";
     /**
      * The current receive timeout ID, if any.
      * @private
@@ -8073,7 +8073,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
                 }
             };
-            var stringSend = "key=" + outputMessageBuffer;
+            stringSend = "key=" + outputMessageBuffer;
             message_xmlhttprequest.send(stringSend);
             outputMessageBuffer = ""; // Clear buffer
             stringSend = "";
