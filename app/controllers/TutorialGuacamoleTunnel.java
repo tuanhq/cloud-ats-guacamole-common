@@ -407,8 +407,8 @@ public class TutorialGuacamoleTunnel  extends Controller {
           GuacamoleWriter writer = tunnel.acquireWriter();
 
           // Get input reader for HTTP stream
-          JsonNode json = request().body().asJson();
-          String value = json.findPath("key").asText();
+          
+          String value = request().body().asFormUrlEncoded().get("key")[0];          
           System.out.println("Value receive IS :" + value); 
           InputStream inputStream = new ByteArrayInputStream(value.getBytes(Charset.forName("UTF-8")));                                  
           BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));

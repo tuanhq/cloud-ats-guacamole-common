@@ -8057,7 +8057,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
             var message_xmlhttprequest = new XMLHttpRequest();
             message_xmlhttprequest.open("POST", TUNNEL_WRITE + tunnel_uuid);
-            message_xmlhttprequest.setRequestHeader("Content-type", "application/json");
+            message_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
             // Once response received, send next queued event.
             message_xmlhttprequest.onreadystatechange = function() {
@@ -8073,7 +8073,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
                 }
             };
-            var stringSend = '{"key": "' + outputMessageBuffer + '"}';
+            var stringSend = "key=" + outputMessageBuffer;
             message_xmlhttprequest.send(stringSend);
             outputMessageBuffer = ""; // Clear buffer
             stringSend = "";
