@@ -144,11 +144,9 @@ public class TutorialGuacamoleTunnel  extends Controller {
               if (tunnel != null) {
 
                   // Get session                    
-                  String uuidKey=session("uuid");
-                  System.out.println("137 Tutorial handle request get uuid from session:" + uuidKey);
+                  String uuidKey=session("uuid");                  
                   if(uuidKey==null) {
-                    uuidKey=java.util.UUID.randomUUID().toString();
-                    System.out.println("140 Tutorial handle generate uuid whennull" + uuidKey);
+                    uuidKey=java.util.UUID.randomUUID().toString();                    
                     session("uuid", uuidKey);
                   }
                   GuacamoleSession session = new GuacamoleSession(uuidKey);
@@ -177,14 +175,9 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
           // If read operation, call doRead() with tunnel UUID, ignoring any
           // characters following the tunnel UUID.
-          else if(request().uri().startsWith(request().path() + "?" + READ_PREFIX)) {
-              System.out.println("start do read socket");
+          else if(request().uri().startsWith(request().path() + "?" + READ_PREFIX)) {              
               final String uuidKey=session("uuid");
-              final String query = request().uri().substring(request().path().length() + 1);
-              System.out.println("query is :" + query);
-              System.out.println("substring query is :" + query.substring(
-                      READ_PREFIX_LENGTH,
-                      READ_PREFIX_LENGTH + UUID_LENGTH));
+              final String query = request().uri().substring(request().path().length() + 1);              
               
               Chunks<String> chunk = new StringChunks() {
                 
@@ -206,14 +199,9 @@ public class TutorialGuacamoleTunnel  extends Controller {
           }
           // If write operation, call doWrite() with tunnel UUID, ignoring any
           // characters following the tunnel UUID.
-          else if(request().uri().startsWith(request().path() + "?" + WRITE_PREFIX)) {
-             System.out.println("start do write socket");
+          else if(request().uri().startsWith(request().path() + "?" + WRITE_PREFIX)) {            
               String uuidKey=session("uuid");
-              String query = request().uri().substring(request().path().length() + 1);
-              System.out.println("query is write :" + query);
-              System.out.println("substring query write is :" + query.substring(
-                  WRITE_PREFIX_LENGTH,
-                  WRITE_PREFIX_LENGTH + UUID_LENGTH));
+              String query = request().uri().substring(request().path().length() + 1);              
               doWrite(uuidKey, query.substring(
                       WRITE_PREFIX_LENGTH,
                       WRITE_PREFIX_LENGTH + UUID_LENGTH));
@@ -406,8 +394,8 @@ public class TutorialGuacamoleTunnel  extends Controller {
    *                            request.
    */
   protected static void doWrite(String uuidKey, String tunnelUUID) throws GuacamoleException {
-    
       
+      System.out.println("START WRITE");
       System.out.println("session id :" + uuidKey);
       System.out.println("tunnelUuid :" + tunnelUUID);
       GuacamoleSession session = new GuacamoleSession(uuidKey);
@@ -431,54 +419,10 @@ public class TutorialGuacamoleTunnel  extends Controller {
           GuacamoleWriter writer = tunnel.acquireWriter();
 
           // Get input reader for HTTP stream
-          Map<String, String[]> values = request().body().asFormUrlEncoded();
-          System.out.println("PRINT QUERY STRING************");
-          for (Entry<String, String[]> entry :request().queryString().entrySet()){
-            System.out.println("key :" + entry.getKey());
-            for (String s : entry.getValue()) {
-              System.out.println("\tvalue : " + s);
-            }
-          }
-          System.out.println("END PRINT QUERY STRING************");
-          try {
-            String value = values.get("key")[0];
-            System.out.println("BBBBBBBBBBBBBBBBBBB :" + value); 
-          } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Have no value get by FORM URLENDCODED EXCEPTION");
-          }
-          
-          
-            
-          System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAA :" + request().uri());          
-          System.out.println("request body as form as string :" + request().body().toString());
-          System.out.println("request body as form as text :" + request().body().asText());
-          try {
-            JsonNode json = request().body().asJson();
-            if(json == null) {
-             System.out.println("JON GET NULL");
-            } else {
-              String name = json.findPath("key").asText();
-              if(name == null) {
-                System.out.println("KEY VALUE NULL");
-              } else {
-                System.out.println("VALUE KEY IS: " + name );
-              }
-            }
-          } catch (Exception e) {
-            // TODO: handle exception;
-            System.out.print("GET JSONE EXCEPTION");
-          }
-          
-          for (Entry<String, String[]> entry: request().body().asFormUrlEncoded().entrySet()){
-            System.out.println("key :" + entry.getKey());
-            for (String s : entry.getValue()) {
-              System.out.println("\tvalue : " + s);
-            }
-            
-          }
-          
-          Reader input = new InputStreamReader(new ByteArrayInputStream(request().body().asFormUrlEncoded().toString().getBytes()),"UTF-8");           
+          JsonNode json = request().body().asJson();
+          String value = json.findPath("key").asText();
+          System.out.println("Value receive IS :" + value);
+          Reader input = new InputStreamReader(new ByteArrayInputStream(value.getBytes()),"UTF-8");          
           
           // Transfer data from input stream to tunnel output, ensuring
           // input is always closed
@@ -489,9 +433,10 @@ public class TutorialGuacamoleTunnel  extends Controller {
               char[] buffer = new char[8192];
 
               // Transfer data using buffer
-              while (tunnel.isOpen() &&
-                      (length = input.read(buffer, 0, buffer.length)) != -1)
+              while (tunnel.isOpen() &&(length = input.read(buffer, 0, buffer.length)) != -1) {
+                  System.out.println(new String(buffer)); 
                   writer.write(buffer, 0, length);
+              }
 
           }
 
