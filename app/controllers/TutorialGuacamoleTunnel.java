@@ -13,8 +13,11 @@ import javax.servlet.ServletException;
 
 
 
+
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 
 
@@ -421,8 +424,8 @@ public class TutorialGuacamoleTunnel  extends Controller {
           // Get input reader for HTTP stream
           JsonNode json = request().body().asJson();
           String value = json.findPath("key").asText();
-          System.out.println("Value receive IS :" + value);
-          Reader input = new InputStreamReader(new ByteArrayInputStream(value.getBytes()),"UTF-8");          
+          System.out.println("Value receive IS :" + value);          
+          Reader input = new InputStreamReader(IOUtils.toInputStream(value));                           
           
           // Transfer data from input stream to tunnel output, ensuring
           // input is always closed
@@ -434,6 +437,12 @@ public class TutorialGuacamoleTunnel  extends Controller {
 
               // Transfer data using buffer
               System.out.println("START LOOP WRITE");
+              
+              if (tunnel.isOpen() ) {
+                System.out.println("TUNNEL IS OPEN");
+              } else {
+                System.out.println("TUNNEL IS CLOSE");
+              }
               while (tunnel.isOpen() &&(length = input.read(buffer, 0, buffer.length)) != -1) {
                   System.out.println("VALUE TO BUFFER" + new String(buffer)); 
                   writer.write(buffer, 0, length);
