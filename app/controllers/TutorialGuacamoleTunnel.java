@@ -324,9 +324,29 @@ public class TutorialGuacamoleTunnel  extends Controller {
               } while (tunnel.isOpen() && (message = reader.read()) != null);
 
               // Close tunnel immediately upon EOF
-              if (message == null)
-                  tunnel.close();
+              
+              
+              System.out.println("MESSAGE END LOOP :" + String.valueOf(message));
+              if (! tunnel.isOpen()) {
+                System.out.println("END LOOP BY TUNNEL IS CLOSE");
+              }
+              
+              
+              if (message == null ) {
+                System.out.println("END LOOP BY TUNNEL IS CLOSE");
+              }
+              
+              if (tunnel.hasQueuedReaderThreads()){
+                System.out.println("END LOOP BY HAS QUEUE READER THEADS");
+              }
+              System.out.println("END LOOP READ FROM GUAC SERVER ");
 
+              // Close tunnel immediately upon EOF
+              if (message == null) {
+                  System.out.println("Do read Tunnel :" + tunnel.getUUID() + " close by message is null");
+                  tunnel.close();
+              }             
+             
               // End-of-instructions marker
               out.write("0.;");                
           }
